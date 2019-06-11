@@ -2,4 +2,6 @@
 
 set -ex
 
-docker run --rm --entrypoint htpasswd registry:2 -Bbn $1 $2 > "${3:-registry/auth}/htpasswd"
+kubectl create secret generic dockerconfigjson \
+    --from-file=.dockerconfigjson=$(echo ~/.docker/config.json) \
+    --type=kubernetes.io/dockerconfigjson
