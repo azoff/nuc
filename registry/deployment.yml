@@ -11,7 +11,7 @@ spec:
     storage: 1Gi
   volumeMode: Filesystem
   accessModes:
-    - ReadWriteOnce
+  - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /mnt/registry
@@ -23,7 +23,7 @@ metadata:
 spec:
   storageClassName: manual
   accessModes:
-    - ReadWriteOnce
+  - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
@@ -44,17 +44,18 @@ spec:
     spec:
       containers:
       - name: registry
-        image: k8s.azof.fr/azoff/registry:1.0.0
-        imagePullPolicy: Never
+        image: k8s.azof.fr/azoff/registry:1.0.1
         ports:
         - containerPort: 5000
         volumeMounts:
-            - name: lib
-              mountPath: /var/lib/registry
-      volumes:
         - name: lib
-          persistentVolumeClaim:
-            claimName: registry
+          mountPath: /var/lib/registry
+      imagePullSecrets:
+      - name: dockerconfigjson
+      volumes:
+      - name: lib
+        persistentVolumeClaim:
+          claimName: registry
 ---
 apiVersion: v1
 kind: Service

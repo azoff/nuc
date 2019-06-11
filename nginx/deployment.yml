@@ -14,10 +14,12 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: k8s.azof.fr/azoff/nginx:1.0.4
+        image: k8s.azof.fr/azoff/nginx:1.0.6
         ports:
         - containerPort: 80
         - containerPort: 443
+      imagePullSecrets:
+      - name: dockerconfigjson
 ---
 apiVersion: v1
 kind: Service
