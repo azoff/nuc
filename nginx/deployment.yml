@@ -18,5 +18,12 @@ spec:
         ports:
         - containerPort: 80
         - containerPort: 443
+        volumeMounts:
+        - name: certs
+          mountPath: /etc/letsencrypt
+      volumes:
+      - name: certs
+        persistentVolumeClaim:
+          claimName: certbot
       imagePullSecrets:
       - name: dockerconfigjson
