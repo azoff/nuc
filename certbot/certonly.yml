@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: certonly
+spec:
+  template:
+    spec:
+      containers:
+      - name: certonly
+        image: k8s.azof.fr/azoff/certbot:0.5.0
+        command: ["certbot", "certonly",
+          "--staging",
+          "--agree-tos",
+          "--non-interactive",
+          "--email", "jon@azof.fr",
+          "--dns-cloudflare",
+          "--dns-cloudflare-credentials", "/etc/cloudflare.ini",
+          "--rsa-key-size", "4096",
+          "-d", "*.azof.fr"
+        ]
+        volumeMounts:
+        - name: conf
+          mountPath: /etc/letsencrypt
+      imagePullSecrets:
+      - name: dockerconfigjson
+      volumes:
+      - name: conf
+        persistentVolumeClaim:
+          claimName: certbot
+      restartPolicy: Never
+  backoffLimit: 4

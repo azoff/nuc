@@ -1,0 +1,24 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: certrenew
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: certrenew
+            image: k8s.azof.fr/azoff/certbot:0.5.0
+            command: ["certbot", "renew"]
+            volumeMounts:
+            - name: conf
+              mountPath: /etc/letsencrypt
+          imagePullSecrets:
+          - name: dockerconfigjson
+          volumes:
+          - name: conf
+            persistentVolumeClaim:
+              claimName: certbot
+          restartPolicy: OnFailure

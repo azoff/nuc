@@ -1,33 +1,3 @@
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: registry
-  labels:
-    type: local
-spec:
-  storageClassName: manual
-  capacity:
-    storage: 1Gi
-  volumeMode: Filesystem
-  accessModes:
-  - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /mnt/registry
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: registry
-spec:
-  storageClassName: manual
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -56,15 +26,3 @@ spec:
       - name: lib
         persistentVolumeClaim:
           claimName: registry
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: registry
-spec:
-  selector:
-    app: registry
-  ports:
-  - protocol: TCP
-    port: 5000
-    targetPort: 5000
