@@ -9,7 +9,8 @@ spec:
       - name: certonly
         image: k8s.azof.fr/azoff/certbot:0.5.0
         command: ["certbot", "certonly",
-          "--staging",
+          # "--staging",
+          "--force-renewal",
           "--agree-tos",
           "--non-interactive",
           "--email", "jon@azof.fr",
