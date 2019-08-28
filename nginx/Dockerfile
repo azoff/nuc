@@ -9,7 +9,6 @@ RUN mkdir -p $SSL_CONFIG_DIR && \
 
 ADD ./static /usr/share/nginx/html
 ADD ./conf.d /etc/nginx/conf.d
-ADD ./certs /etc/nginx/certs
 
 ADD ./scripts/entrypoint /bin/entrypoint
 ADD ./scripts/nginx-reload /etc/periodic/monthly/nginx-reload
