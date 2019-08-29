@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: registry
-        image: k8s.azof.fr/azoff/registry:1.0.1
+        image: k8s.azof.fr/azoff/registry:1.1.0
         ports:
         - containerPort: 5000
         volumeMounts:
