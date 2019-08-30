@@ -10,15 +10,25 @@ spec:
         spec:
           containers:
           - name: certrenew
-            image: k8s.azof.fr/azoff/certbot:0.5.0
+            image: k8s.azof.fr/azoff/certbot:0.6.2
             command: ["certbot", "renew"]
             volumeMounts:
             - name: conf
               mountPath: /etc/letsencrypt
+            - name: cloudflare
+              mountPath: /etc/cloudflare.ini
+              subPath: cloudflare.ini
+              readOnly: true
           imagePullSecrets:
           - name: dockerconfigjson
           volumes:
           - name: conf
             persistentVolumeClaim:
               claimName: certbot
+          - name: cloudflare
+            secret:
+              secretName: nuc
+              items:
+              - key: cloudflare
+                path: cloudflare.ini
           restartPolicy: OnFailure

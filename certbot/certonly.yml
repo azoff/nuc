@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
       - name: certonly
-        image: k8s.azof.fr/azoff/certbot:0.5.0
+        image: k8s.azof.fr/azoff/certbot:0.6.2
         command: ["certbot", "certonly",
           # "--staging",
           "--force-renewal",
@@ -15,18 +15,28 @@ spec:
           "--non-interactive",
           "--email", "jon@azof.fr",
           "--dns-cloudflare",
-          "--dns-cloudflare-credentials", "/etc/cloudflare.ini",
+          "--dns-cloudflare-credentials", "$CLOUDFLARE_INI_PATH",
           "--rsa-key-size", "4096",
           "-d", "*.azof.fr"
         ]
         volumeMounts:
         - name: conf
           mountPath: /etc/letsencrypt
+        - name: cloudflare
+          mountPath: /etc/cloudflare.ini
+          subPath: cloudflare.ini
+          readOnly: true
       imagePullSecrets:
       - name: dockerconfigjson
       volumes:
       - name: conf
         persistentVolumeClaim:
           claimName: certbot
+      - name: cloudflare
+        secret:
+          secretName: nuc
+          items:
+          - key: cloudflare
+            path: cloudflare.ini
       restartPolicy: Never
   backoffLimit: 4
