@@ -14,15 +14,31 @@ spec:
     spec:
       containers:
       - name: registry
-        image: k8s.azof.fr/azoff/registry:1.1.0
+        image: k8s.azof.fr/azoff/registry:1.3.0
         ports:
         - containerPort: 5000
+        env:
+        - name: "REGISTRY_HTTP_SECRET"
+          valueFrom:
+            secretKeyRef:
+              name: nuc
+              key: registry-secret
         volumeMounts:
         - name: lib
           mountPath: /var/lib/registry
+        - name: registry-htpasswd
+          mountPath: /etc/registry.htpasswd
+          subPath: registry.htpasswd
+          readOnly: true
       imagePullSecrets:
       - name: dockerconfigjson
       volumes:
       - name: lib
         persistentVolumeClaim:
           claimName: registry
+      - name: registry-htpasswd
+        secret:
+          secretName: nuc
+          items:
+          - key: registry-htpasswd
+            path: registry.htpasswd

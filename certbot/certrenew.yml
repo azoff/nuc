@@ -15,7 +15,7 @@ spec:
             volumeMounts:
             - name: conf
               mountPath: /etc/letsencrypt
-            - name: cloudflare
+            - name: cloudflare-ini
               mountPath: /etc/cloudflare.ini
               subPath: cloudflare.ini
               readOnly: true
@@ -25,10 +25,10 @@ spec:
           - name: conf
             persistentVolumeClaim:
               claimName: certbot
-          - name: cloudflare
+          - name: cloudflare-ini
             secret:
               secretName: nuc
               items:
-              - key: cloudflare
+              - key: cloudflare-ini
                 path: cloudflare.ini
           restartPolicy: OnFailure
