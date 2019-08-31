@@ -18,16 +18,18 @@ spec:
         ports:
         - containerPort: 5000
         env:
-        - name: "REGISTRY_HTTP_SECRET"
+        - name: REGISTRY_AUTH_HTPASSWD_PATH
+          value: /run/secrets/nuc/registry.htpasswd
+        - name: REGISTRY_HTTP_SECRET
           valueFrom:
             secretKeyRef:
               name: nuc
-              key: registry-secret
+              key: registry.secret
         volumeMounts:
         - name: lib
           mountPath: /var/lib/registry
         - name: registry-htpasswd
-          mountPath: /etc/registry.htpasswd
+          mountPath: /run/secrets/nuc/registry.htpasswd
           subPath: registry.htpasswd
           readOnly: true
       imagePullSecrets:
@@ -40,5 +42,5 @@ spec:
         secret:
           secretName: nuc
           items:
-          - key: registry-htpasswd
+          - key: registry.htpasswd
             path: registry.htpasswd

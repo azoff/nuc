@@ -1,0 +1,51 @@
+version: "3.7"
+
+services:
+
+  secrets_nuc:
+    image: azoff/mount-k8s-secrets:1.0.0
+    command: nuc
+    volumes:
+      - secrets:/run/secrets
+
+  secrets_brain:
+    image: azoff/mount-k8s-secrets:1.0.0
+    command: brain
+    volumes:
+      - secrets:/run/secrets
+
+  certbot:
+    image: azoff/certbot
+    build: certbot
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - secrets:/run/secrets # TODO: fix file perms chmod 600
+    command: ["certonly",
+          "--staging",
+          "--force-renewal",
+          "--agree-tos",
+          "--non-interactive",
+          "--email", "jon@azof.fr",
+          "--dns-cloudflare",
+          "--dns-cloudflare-credentials", "/run/secrets/nuc/cloudflare.ini",
+          "--rsa-key-size", "4096",
+          "-d", "*.azof.fr"]
+
+  brain:
+    init: true
+    image: k8s.azof.fr/azoff/brain
+    environment:
+      - GOOGLE_CREDENTIAL_PATH=/run/secrets/brain/google-auth.json
+    volumes:
+      - secrets:/run/secrets
+    networks:
+      private:
+        aliases:
+         - brain.default
+
+networks:
+  private:
+
+volumes:
+  letsencrypt:
+  secrets:
