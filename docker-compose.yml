@@ -14,22 +14,27 @@ services:
     volumes:
       - secrets:/run/secrets
 
-  certbot:
-    image: azoff/certbot
-    build: certbot
+  certbot: # not really using certbot locally...
+    image: jnovack/self-signed-san
+    entrypoint: ["sh", "-c"]
+    command: ["mkdir -p /etc/letsencrypt/live/azof.fr && /entrypoint.sh && cp key.pem /etc/letsencrypt/live/azof.fr/privkey.pem && cp certificate.pem /etc/letsencrypt/live/azof.fr/fullchain.pem"]
     volumes:
       - letsencrypt:/etc/letsencrypt
-      - secrets:/run/secrets # TODO: fix file perms chmod 600
-    command: ["certonly",
-          "--staging",
-          "--force-renewal",
-          "--agree-tos",
-          "--non-interactive",
-          "--email", "jon@azof.fr",
-          "--dns-cloudflare",
-          "--dns-cloudflare-credentials", "/run/secrets/nuc/cloudflare.ini",
-          "--rsa-key-size", "4096",
-          "-d", "*.azof.fr"]
+
+  registry:
+    init: true
+    image: azoff/registry
+    build: registry
+    environment:
+      - REGISTRY_HTTP_SECRET=l0c@l
+      - REGISTRY_AUTH_HTPASSWD_PATH=/run/secrets/nuc/registry.htpasswd
+    volumes:
+      - secrets:/run/secrets
+      - registry:/var/lib/registry
+    networks:
+      private:
+        aliases:
+         - registry.default
 
   brain:
     init: true
@@ -43,9 +48,25 @@ services:
         aliases:
          - brain.default
 
+  nginx:
+    init: true
+    image: azoff/nginx
+    build: nginx
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+    depends_on:
+      - brain
+      - registry
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      private:
+
 networks:
   private:
 
 volumes:
   letsencrypt:
   secrets:
+  registry:
