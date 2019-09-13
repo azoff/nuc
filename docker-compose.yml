@@ -14,6 +14,12 @@ services:
     volumes:
       - secrets:/run/secrets
 
+  secrets_hmad:
+    image: azoff/mount-k8s-secrets:1.0.0
+    command: hmad
+    volumes:
+      - secrets:/run/secrets
+
   certbot: # not really using certbot locally...
     image: jnovack/self-signed-san
     entrypoint: ["sh", "-c"]
@@ -47,6 +53,19 @@ services:
       private:
         aliases:
          - brain.default
+
+
+  hmad:
+    init: true
+    image: k8s.azof.fr/azoff/hmad
+    environment:
+      - SECRETS_PATH=/run/secrets/hmad/secrets.json
+    volumes:
+      - secrets:/run/secrets
+    networks:
+      private:
+        aliases:
+         - hmad.default
 
   nginx:
     init: true

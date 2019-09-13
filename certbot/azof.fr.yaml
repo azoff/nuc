@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: certonly-azoffr
+spec:
+  template:
+    spec:
+      containers:
+      - name: certonly-azoffr
+        image: k8s.azof.fr/azoff/certbot:0.7.0
+        command: ["certbot", "certonly",
+          "--force-renewal",
+          "--agree-tos",
+          "--non-interactive",
+          "--email", "jon@azof.fr",
+          "--dns-cloudflare",
+          "--dns-cloudflare-credentials", "/run/secrets/nuc/cloudflare.ini",
+          "--rsa-key-size", "4096",
+          "-d", "*.azof.fr"
+        ]
+        volumeMounts:
+        - name: conf
+          mountPath: /etc/letsencrypt
+        - name: cloudflare-ini
+          mountPath: /run/secrets/nuc/cloudflare.ini
+          subPath: cloudflare.ini
+          readOnly: true
+      imagePullSecrets:
+      - name: dockerconfigjson
+      volumes:
+      - name: conf
+        persistentVolumeClaim:
+          claimName: certbot
+      - name: cloudflare-ini
+        secret:
+          secretName: nuc
+          items:
+          - key: cloudflare.ini
+            path: cloudflare.ini
+      restartPolicy: Never
+  backoffLimit: 4
