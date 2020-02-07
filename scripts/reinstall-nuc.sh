@@ -40,7 +40,7 @@ echo "dns_cloudflare_email = $CLOUDFLARE_EMAIL" >| /tmp/cloudflare.ini
 echo "dns_cloudflare_api_key = $CLOUDFLARE_KEY" >> /tmp/cloudflare.ini
 
 echo "> creating registry secrets..."
-htpasswd -bc /tmp/registry.htpasswd $HTPASSWD_USER $HTPASSWD_PASS
+htpasswd -Bbc /tmp/registry.htpasswd $HTPASSWD_USER $HTPASSWD_PASS
 md5 -qs registry > /tmp/registry.secret
 
 echo "> creating nuc secret..."
