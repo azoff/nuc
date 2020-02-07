@@ -4,6 +4,7 @@ set -ex
 
 sudo apt-get update
 sudo apt-get install docker.io kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
 sudo systemctl start docker.service
 sudo systemctl enable docker.service
 sudo kubeadm init \

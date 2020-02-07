@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: certrenew
 spec:
-  schedule: "@monthly"
+  schedule: "@daily"
   jobTemplate:
     spec:
       template:
@@ -11,7 +11,12 @@ spec:
           containers:
           - name: certrenew
             image: k8s.azof.fr/azoff/certbot:0.7.0
-            command: ["certbot", "renew"]
+            command: ["certbot", "renew",
+              "--non-interactive",
+              "--email", "jon@azof.fr",
+              "--dns-cloudflare",
+              "--dns-cloudflare-credentials", "/run/secrets/nuc/cloudflare.ini"
+            ]
             volumeMounts:
             - name: conf
               mountPath: /etc/letsencrypt

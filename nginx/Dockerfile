@@ -11,7 +11,7 @@ ADD ./static /usr/share/nginx/html
 ADD ./conf.d /etc/nginx/conf.d
 
 ADD ./scripts/entrypoint /bin/entrypoint
-ADD ./scripts/nginx-reload /etc/periodic/monthly/nginx-reload
+ADD ./scripts/nginx-reload /etc/periodic/daily/nginx-reload
 ADD ./scripts/cron-pulse /etc/periodic/15min/cron-pulse
 
 ENTRYPOINT ["/bin/entrypoint"]
