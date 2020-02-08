@@ -18,8 +18,8 @@ spec:
         ports:
         - containerPort: 5000
         env:
-        - name: REGISTRY_AUTH
-          value: htpasswd
+        - name: REGISTRY_HTTP_RELATIVEURLS
+          value: 'true'
         - name: REGISTRY_AUTH_HTPASSWD_PATH
           value: /run/secrets/nuc/registry.htpasswd
         - name: REGISTRY_HTTP_SECRET

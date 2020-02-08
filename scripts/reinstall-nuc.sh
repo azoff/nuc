@@ -8,8 +8,9 @@ TLD_NAME=azof.fr
 SSH_HOST=nuc.$TLD_NAME
 REGISTRY_HOST=k8s.$TLD_NAME
 CERTBOT_VERSION=0.7.0
-NGINX_VERSION=1.5.5
+NGINX_VERSION=1.5.9
 REGISTRY_VERSION=1.3.0
+HMAD_VERSION=1.4.0
 CLOUDFLARE_EMAIL=jon@azof.fr
 HTPASSWD_USER=jon
 
@@ -22,6 +23,14 @@ fi
 if [[ $HTPASSWD_PASS == "" ]]; then
 	echo "usage HTPASSWD_PASS=... $0"
 	echo "see: https://certbot-dns-cloudflare.readthedocs.io/en/stable/#credentials"
+	exit 2
+fi
+
+if [[ ! -f $DIR/../../hmad/secrets.json ]]; then
+	echo "please make sure that the hmad secrets.json file exists"
+	echo "see: https://console.developers.google.com/iam-admin/serviceaccounts/details/101790955415745813661;edit=true?previousPage=%2Fapis%2Fcredentials%3Fproject%3Dhmad-224518&folder=&organizationId=&project=hmad-224518"
+	echo "and: https://app.mailgun.com/app/sending/domains/mail.harrisonmetalu.mn/credentials"
+	echo "and: https://dashboard.stripe.com/apikeys"
 	exit 2
 fi
 
@@ -101,3 +110,15 @@ echo "> creating docker registry pull secret..."
 kubectl create secret generic dockerconfigjson \
     --from-file=.dockerconfigjson=$(echo ~/.docker/config.json) \
     --type=kubernetes.io/dockerconfigjson
+
+echo "> creating hmad namespace"
+kubectl create namespace hmad
+
+echo "> creating hmad secret"
+kubectl -n hmad create secret generic hmad --from-file=$DIR/../../hmad/secrets.json
+
+echo "> creating hmad deployment..."
+kubectl -n hmad apply -f $DIR/../../hmad/deployment.yml
+
+echo "> creating hmad service..."
+kubectl -n hmad apply -f $DIR/../../hmad/service.yml
