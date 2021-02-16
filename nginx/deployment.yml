@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: k8s.azof.fr/azoff/nginx:1.5.10
+        image: k8s.azof.fr/azoff/nginx:1.6.4
         ports:
         - containerPort: 80
         - containerPort: 443
@@ -26,4 +26,4 @@ spec:
         persistentVolumeClaim:
           claimName: certbot
       imagePullSecrets:
-      - name: dockerconfigjson
+      - name: regcred

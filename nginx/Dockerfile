@@ -2,9 +2,9 @@ FROM nginx:alpine
 
 ARG SSL_CONFIG_DIR=/etc/nginx/ssl
 RUN mkdir -p $SSL_CONFIG_DIR && \
-	wget "https://github.com/certbot/certbot/raw/master/certbot-nginx/certbot_nginx/tls_configs/options-ssl-nginx.conf" \
+	wget "https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf" \
 		-O "$SSL_CONFIG_DIR/options-ssl-nginx.conf" && \
-  	wget "https://github.com/certbot/certbot/raw/master/certbot/ssl-dhparams.pem" \
+  	wget "https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem" \
   		-O "$SSL_CONFIG_DIR/ssl-dhparams.pem"
 
 ADD ./static /usr/share/nginx/html

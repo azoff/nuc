@@ -35,7 +35,7 @@ spec:
           subPath: registry.htpasswd
           readOnly: true
       imagePullSecrets:
-      - name: dockerconfigjson
+      - name: regcred
       volumes:
       - name: lib
         persistentVolumeClaim:

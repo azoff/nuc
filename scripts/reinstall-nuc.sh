@@ -107,8 +107,8 @@ sleep 5
 docker login k8s.azof.fr
 
 echo "> creating docker registry pull secret..."
-kubectl create secret generic dockerconfigjson \
-    --from-file=.dockerconfigjson=$(echo ~/.docker/config.json) \
+kubectl create secret generic regcred \
+    --from-file=.dockerconfigjson=$HOME/.docker/config.json \
     --type=kubernetes.io/dockerconfigjson
 
 echo "> creating hmad namespace"

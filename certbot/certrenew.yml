@@ -25,7 +25,7 @@ spec:
               subPath: cloudflare.ini
               readOnly: true
           imagePullSecrets:
-          - name: dockerconfigjson
+          - name: regcred
           volumes:
           - name: conf
             persistentVolumeClaim:
