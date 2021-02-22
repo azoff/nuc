@@ -14,16 +14,27 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: k8s.azof.fr/azoff/nginx:1.6.4
+        image: k8s.azof.fr/azoff/nginx:1.6.6
         ports:
         - containerPort: 80
         - containerPort: 443
         volumeMounts:
         - name: certs
           mountPath: /etc/letsencrypt
+        - name: registry-htpasswd
+          mountPath: /run/secrets/nuc/registry.htpasswd
+          subPath: registry.htpasswd
+          readOnly: true
       volumes:
       - name: certs
         persistentVolumeClaim:
           claimName: certbot
+      - name: registry-htpasswd
+        secret:
+          secretName: nuc
+          items:
+          - key: registry.htpasswd
+            path: registry.htpasswd
       imagePullSecrets:
       - name: regcred
+
