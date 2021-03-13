@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: k8s.azof.fr/azoff/nginx:1.6.6
+        image: k8s.azof.fr/azoff/nginx:1.6.9
         ports:
         - containerPort: 80
         - containerPort: 443
