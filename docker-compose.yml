@@ -1,91 +1,19 @@
-version: "3.7"
+version: "3.8"
 
 services:
-
-  secrets_nuc:
-    image: azoff/mount-k8s-secrets:1.0.0
-    command: nuc
-    volumes:
-      - secrets:/run/secrets
-
-  secrets_brain:
-    image: azoff/mount-k8s-secrets:1.0.0
-    command: brain
-    volumes:
-      - secrets:/run/secrets
-
-  secrets_hmad:
-    image: azoff/mount-k8s-secrets:1.0.0
-    command: hmad
-    volumes:
-      - secrets:/run/secrets
-
-  certbot: # not really using certbot locally...
-    image: jnovack/self-signed-san
-    entrypoint: ["sh", "-c"]
-    command: ["mkdir -p /etc/letsencrypt/live/azof.fr && /entrypoint.sh && cp key.pem /etc/letsencrypt/live/azof.fr/privkey.pem && cp certificate.pem /etc/letsencrypt/live/azof.fr/fullchain.pem"]
-    volumes:
-      - letsencrypt:/etc/letsencrypt
-
-  registry:
-    init: true
-    image: azoff/registry
-    build: registry
-    environment:
-      - REGISTRY_HTTP_SECRET=l0c@l
-      - REGISTRY_AUTH_HTPASSWD_PATH=/run/secrets/nuc/registry.htpasswd
-    volumes:
-      - secrets:/run/secrets
-      - registry:/var/lib/registry
-    networks:
-      private:
-        aliases:
-         - registry.default
-
-  brain:
-    init: true
-    image: k8s.azof.fr/azoff/brain
-    environment:
-      - GOOGLE_CREDENTIAL_PATH=/run/secrets/brain/google-auth.json
-    volumes:
-      - secrets:/run/secrets
-    networks:
-      private:
-        aliases:
-         - brain.default
-
-
-  hmad:
-    init: true
-    image: k8s.azof.fr/azoff/hmad
-    environment:
-      - SECRETS_PATH=/run/secrets/hmad/secrets.json
-    volumes:
-      - secrets:/run/secrets
-    networks:
-      private:
-        aliases:
-         - hmad.default
 
   nginx:
     init: true
     image: azoff/nginx
     build: nginx
-    volumes:
-      - letsencrypt:/etc/letsencrypt
-    depends_on:
-      - brain
-      - registry
     ports:
       - "80:80"
-      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/static:/var/www/static
+
     networks:
       private:
 
 networks:
   private:
-
-volumes:
-  letsencrypt:
-  secrets:
-  registry:
