@@ -1,6 +1,11 @@
 service:=nuc
+volume:=/dev/sda1
 
-all: install enable start
+all: mount install enable start
+
+mount:
+	sudo mkdir /media/plex
+	sudo mount -t ext4 $(volume) /media/plex
 
 install:
 	sudo cp -fv system/nuc.service /etc/systemd/system/$(service).service
