@@ -1,0 +1,16 @@
+[Unit]
+Description=azoff/nuc
+Requires=docker.service
+After=docker.service
+StartLimitIntervalSec=60
+
+[Service]
+WorkingDirectory=/home/azoff/nuc
+ExecStart=/usr/bin/env docker compose up
+ExecStop=/usr/bin/env docker compose down
+TimeoutStartSec=0
+Restart=on-failure
+StartLimitBurst=3
+
+[Install]
+WantedBy=multi-user.target

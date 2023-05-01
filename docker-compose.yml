@@ -6,14 +6,24 @@ services:
     init: true
     image: azoff/nginx
     build: nginx
+    restart: unless-stopped
     ports:
       - "80:80"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/static:/var/www/static
-
     networks:
       private:
+  
+  plex:
+    image: plexinc/pms-docker
+    container_name: plex
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - TZ=America/New_York
+      - PLEX_CLAIM=claim-xxxxxxxxxxxxxxxxxxxx
+      - ADVERTISE_IP=http://
 
 networks:
   private:
