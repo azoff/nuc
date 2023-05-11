@@ -8,21 +8,24 @@ services:
     build: nginx
     restart: unless-stopped
     ports:
-      - "80:80"
+      - '443:443'
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/static:/var/www/static
+      - ./nginx/vhosts:/var/www/vhosts
+      - https-portal-data:/var/lib/https-portal
     networks:
       - private
+    env_file: .env
 
   plex:
     image: azoff/plex
     build: plex
     restart: unless-stopped
     volumes:
-      - ./plex/config:/config
-      - /tmp/plex/transcode:/transcode
-      - /media/plex:/data:ro
+      - ${SHARED_MOUNT_PATH}/plex/data:/data:ro
+      - ${SHARED_MOUNT_PATH}/plex/config:/config
+      - ${PLEX_TRANSCODE_PATH:-/tmp/plex/transcode}:/transcode
+      - ./certbot/certs:/etc/nginx/certs:ro
+      - ./certbot/letsencrypt:/etc/letsencrypt:ro
     env_file: .env
     devices:
       - /dev/dri:/dev/dri
@@ -40,3 +43,6 @@ services:
 
 networks:
   private:
+
+volumes:
+  https-portal-data:
