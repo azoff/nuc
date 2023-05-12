@@ -17,7 +17,7 @@ install:
 	  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
 	  $(shell lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 	sudo apt update
-	sudo apt install -y docker-ce docker-ce-cli containerd.io 
+	sudo apt install -y docker-ce docker-ce-cli containerd.io
 
 build:
 	docker compose build
@@ -46,6 +46,12 @@ hooks:
 
 sync:
 	docker compose up -d --force-recreate --remove-orphans
+
+expressvpn:
+	curl https://www.expressvpn.works/clients/linux/expressvpn_3.48.0.4-1_amd64.deb > /tmp/expressvpn.deb
+	sudo dpkg -i /tmp/expressvpn.deb
+	expressvpn activate
+	expressvpn connect
 
 origin:
 	git remote rm origin || true
