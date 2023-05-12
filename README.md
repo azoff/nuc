@@ -25,10 +25,10 @@ make deploy-key
 
 Checkout the `production` branch with the deployment key, and then you can add your deployment host as a remote (see `make origin`).
 
-If you'd like to trigger deployments when you push, you'll need to install the post-push hooks:
+If you'd like to trigger deployments when the server receives refs, you'll need to install the post-update hook on the server:
 
 ```sh
 make hooks
 ```
 
-Then, the next time you `git push` it will push to the origin you desire, and run the associated sync.
+Then, the next time you `git push` some refs to the server, it will run `make sync` on the server.

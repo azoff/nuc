@@ -43,9 +43,6 @@ logs:
 hooks:
 	git config --local core.hooksPath .githooks/
 
-deploy:
-	ssh nuc.azof.fr:nuc make sync
-
 sync:
 	git merge --ff-only master
 	docker compose up -d --force-recreate --remove-orphans
