@@ -42,6 +42,7 @@ logs:
 
 hooks:
 	git config --local core.hooksPath .githooks/
+	git config --local receive.denyCurrentBranch updateInstead
 
 sync:
 	git merge --ff-only master

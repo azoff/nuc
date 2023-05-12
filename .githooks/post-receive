@@ -1,8 +1,0 @@
-#!/bin/sh
-
-echo "executing post-receive hook"
-set -xe
-
-whoami
-pwd
-env

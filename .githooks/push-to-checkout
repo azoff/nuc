@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "executing pre-receive hook"
+echo "executing push-to-checkout"
 set -xe
 
 whoami
