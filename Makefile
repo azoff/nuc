@@ -45,7 +45,7 @@ hooks:
 	git config --local receive.denyCurrentBranch updateInstead
 
 sync:
-	git rev-parse HEAD
+	cat README.md
 	docker compose up -d --force-recreate --remove-orphans
 
 origin:

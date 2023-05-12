@@ -20,7 +20,6 @@ services:
           ${CCTV_LOGIN:-}cctv.azof.fr -> http://${CCTV_IP:-tinypilot.local}, 
           tx.azof.fr   -> http://localhost:9091
 
-
   plex:
     image: azoff/plex
     build: plex

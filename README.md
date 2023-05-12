@@ -32,3 +32,7 @@ make hooks
 ```
 
 Then, the next time you `git push` some refs to the server, it will run `make sync` on the server.
+
+## VPN
+
+TODO
