@@ -35,7 +35,7 @@ status:
 	sudo systemctl status $(service)
 
 journal:
-	sudo journalctl -u $(service)
+	sudo journalctl -fu $(service)
 
 logs:
 	docker compose logs -f
