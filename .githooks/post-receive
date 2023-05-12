@@ -1,8 +1,9 @@
 #!/bin/sh
 
-echo "executing push-to-checkout"
-set -xe
-
-whoami
-pwd
-env
+while read oldrev newrev ref
+do
+    branch=$(git rev-parse --symbolic --abbrev-ref $ref)
+    if [[ $branch == "master" ]]; then
+        make sync
+    fi
+done

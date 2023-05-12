@@ -41,7 +41,7 @@ logs:
 	docker compose logs -f
 
 hooks:
-	ln -s .githooks/post-receive .git/hooks/post-receive
+	cp -vf .githooks/* .git/hooks/
 	git config --local receive.denyCurrentBranch updateInstead
 
 sync:
