@@ -41,7 +41,7 @@ logs:
 	docker compose logs -f
 
 hooks:
-	git config --local core.hooksPath .githooks
+	git config --local core.hooksPath .githooks/
 
 deploy:
 	ssh nuc.azof.fr:nuc make sync
