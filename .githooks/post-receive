@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-set -e
-echo "post-recieve hook running"
-exit 1
-
-make sync
+while read oldrev newrev ref
+do
+    BRANCH=$(git rev-parse --symbolic --abbrev-ref $ref)
+    if [[ $BRANCH == "master" ]]; then
+        echo "Push received! deploying branch: ${BRANCH}..."
+    else
+        echo "Not master branch. Skipping."
+    fi
+done
