@@ -45,7 +45,6 @@ hooks:
 	git config --local receive.denyCurrentBranch updateInstead
 
 sync:
-	git merge --ff-only master
 	docker compose up -d --force-recreate --remove-orphans
 
 origin:
