@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+echo "post-recieve hook running"
+exit 1
+
 make sync
