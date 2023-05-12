@@ -42,9 +42,9 @@ services:
       - ${SHARED_MOUNT_PATH:-/tmp}/transmission/config:/config
       - ${SHARED_MOUNT_PATH:-/tmp}/transmission/watch:/watch
     env_file: .env
-    # environment:
-    #   - USER=${TRANSMISSION_USER:-transmission}
-    #   - PASS=${TRANSMISSION_PASS:-transmission}
+    environment:
+      - USER=${TRANSMISSION_USER:-transmission}
+      - PASS=${TRANSMISSION_PASSWORD:-transmission}
     ports:
       - 9091:9091
       - 51413:51413
