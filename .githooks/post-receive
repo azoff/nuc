@@ -1,4 +1,6 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env bash
+
+set -eo pipefail
 
 while read oldrev newrev ref
 do
