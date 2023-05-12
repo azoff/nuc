@@ -7,13 +7,10 @@ services:
     image: azoff/nginx
     build: nginx
     restart: unless-stopped
-    ports:
-      - '443:443'
     volumes:
       - ./nginx/vhosts:/var/www/vhosts
       - https-portal-data:/var/lib/https-portal
-    networks:
-      - private
+    network_mode: host
     env_file: .env
 
   plex:
@@ -24,25 +21,27 @@ services:
       - ${SHARED_MOUNT_PATH}/plex/data:/data:ro
       - ${SHARED_MOUNT_PATH}/plex/config:/config
       - ${PLEX_TRANSCODE_PATH:-/tmp/plex/transcode}:/transcode
-      - ./certbot/certs:/etc/nginx/certs:ro
-      - ./certbot/letsencrypt:/etc/letsencrypt:ro
     env_file: .env
     devices:
       - /dev/dri:/dev/dri
+    network_mode: host
+  
+  transmission:
+    image: azoff/transmission
+    build: tranmission
+    restart: unless-stopped
+    volumes:
+      - ${SHARED_MOUNT_PATH}/plex/data:/downloads
+      - ${SHARED_MOUNT_PATH}/transmission/config:/config
+      - ${SHARED_MOUNT_PATH}/transmission/watch:/watch
+    env_file: .env
+    environment:
+      - USER=${TRANSMISSION_USER:-transmission}
+      - PASS=${TRANSMISSION_PASS:-transmission}
     ports:
-      - 32400:32400/tcp
-      - 8324:8324/tcp
-      - 32469:32469/tcp
-      - 1900:1900/udp
-      - 32410:32410/udp
-      - 32412:32412/udp
-      - 32413:32413/udp
-      - 32414:32414/udp
-    networks:
-      - private
-
-networks:
-  private:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
 
 volumes:
   https-portal-data:
