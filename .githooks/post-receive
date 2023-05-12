@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 
-set -xeo pipefail
+set -eo pipefail
 
-whoami
-pwd
-env
+cd $GIT_DIR/..
 
 while read oldrev newrev ref
 do
