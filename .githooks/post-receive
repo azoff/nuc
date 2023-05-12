@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+set -xeo pipefail
+
+whoami
+pwd
+env
 
 while read oldrev newrev ref
 do
