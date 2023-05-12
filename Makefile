@@ -47,12 +47,6 @@ hooks:
 sync:
 	docker compose up -d --force-recreate --remove-orphans
 
-expressvpn:
-	curl https://www.expressvpn.works/clients/linux/expressvpn_3.48.0.4-1_amd64.deb > /tmp/expressvpn.deb
-	sudo dpkg -i /tmp/expressvpn.deb
-	expressvpn activate
-	expressvpn connect
-
 origin:
 	git remote rm origin || true
 	git remote add origin git@github.com:azoff/nuc.git

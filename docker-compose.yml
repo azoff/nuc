@@ -45,10 +45,29 @@ services:
     environment:
       - USER=${TRANSMISSION_USER:-transmission}
       - PASS=${TRANSMISSION_PASSWORD:-transmission}
+    network_mode: service:vpn
+    depends_on:
+      - vpn
+  
+  vpn:
+    image: azoff/vpn
+    build: vpn
+    environment:
+      - ACTIVATION_CODE=${EXPRESSVPN_ACTIVATION_CODE}
+    cap_add:
+      - NET_ADMIN
+    devices: 
+      - /dev/net/tun
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    privileged: true
+    restart: unless-stopped
     ports:
+      # transmission / bittrorrent
       - 9091:9091
       - 51413:51413
       - 51413:51413/udp
-
+    
 volumes:
   https-portal-data:
