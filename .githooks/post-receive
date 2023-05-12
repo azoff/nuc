@@ -1,4 +1,8 @@
 #!/bin/sh
 
 echo "executing post-receive hook"
-exit 0
+set -xe
+
+whoami
+pwd
+env
