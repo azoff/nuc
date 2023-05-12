@@ -2,7 +2,8 @@
 
 set -eo pipefail
 
-cd $GIT_DIR/..
+cd "${GIT_DIR}/.."
+pwd
 
 while read oldrev newrev ref
 do
