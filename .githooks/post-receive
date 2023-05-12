@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash -e
 
 while read oldrev newrev ref
 do
