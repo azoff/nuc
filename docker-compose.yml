@@ -45,7 +45,6 @@ services:
     environment:
       - USER=${TRANSMISSION_USER:-transmission}
       - PASS=${TRANSMISSION_PASSWORD:-transmission}
-      - RPC_WHITELIST=127.0.0.1,192.168.*.*
     network_mode: service:vpn
     depends_on:
       - vpn
