@@ -39,3 +39,7 @@ journal:
 
 logs:
 	docker compose logs -f
+
+deploy-key:
+	ssh-keygen -t ed25519 -C "nuc" -f ~/.ssh/id_ed25519_nuc
+	cat ~/.ssh/id_ed25519_nuc.pub
