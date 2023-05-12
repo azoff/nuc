@@ -17,7 +17,7 @@ install:
 	  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
 	  $(shell lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 	sudo apt update
-	sudo apt install -y docker-ce docker-ce-cli containerd.io
+	sudo apt install -y docker-ce docker-ce-cli containerd.io 
 
 build:
 	docker compose build
@@ -40,6 +40,10 @@ journal:
 logs:
 	docker compose logs -f
 
+add-remote:
+	git remote set-url --add origin azoff@nuc.azof.fr:azoff/nuc
+
 deploy-key:
-	ssh-keygen -t ed25519 -C "nuc" -f ~/.ssh/id_ed25519_nuc
-	cat ~/.ssh/id_ed25519_nuc.pub
+	[ -f ~/.ssh/id_ed25519.pub ] || ssh-keygen -t ed25519 -C "nuc" -f ~/.ssh/id_ed25519
+	cat ~/.ssh/id_ed25519.pub
+	ssh git@github.com
