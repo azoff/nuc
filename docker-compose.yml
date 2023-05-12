@@ -12,14 +12,22 @@ services:
       - https-portal-data:/var/lib/https-portal
     network_mode: host
     env_file: .env
+    environment:
+      - STAGE=${CERT_STAGE:-local}
+      - DOMAINS=
+          static.azof.fr, 
+          plex.azof.fr -> http://localhost:32400, 
+          ${CCTV_LOGIN:-}cctv.azof.fr -> http://${CCTV_IP:-tinypilot.local}, 
+          tx.azof.fr   -> http://localhost:9091
+
 
   plex:
     image: azoff/plex
     build: plex
     restart: unless-stopped
     volumes:
-      - ${SHARED_MOUNT_PATH}/plex/data:/data:ro
-      - ${SHARED_MOUNT_PATH}/plex/config:/config
+      - ${SHARED_MOUNT_PATH:-/tmp}/plex/data:/data:ro
+      - ${SHARED_MOUNT_PATH:-/tmp}/plex/config:/config
       - ${PLEX_TRANSCODE_PATH:-/tmp/plex/transcode}:/transcode
     env_file: .env
     devices:
@@ -28,12 +36,12 @@ services:
   
   transmission:
     image: azoff/transmission
-    build: tranmission
+    build: transmission
     restart: unless-stopped
     volumes:
-      - ${SHARED_MOUNT_PATH}/plex/data:/downloads
-      - ${SHARED_MOUNT_PATH}/transmission/config:/config
-      - ${SHARED_MOUNT_PATH}/transmission/watch:/watch
+      - ${SHARED_MOUNT_PATH:-/tmp}/plex/data:/downloads
+      - ${SHARED_MOUNT_PATH:-/tmp}/transmission/config:/config
+      - ${SHARED_MOUNT_PATH:-/tmp}/transmission/watch:/watch
     env_file: .env
     environment:
       - USER=${TRANSMISSION_USER:-transmission}

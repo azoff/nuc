@@ -5,9 +5,10 @@ After=docker.service
 StartLimitIntervalSec=60
 
 [Service]
+Environment="CERT_STAGE=production"
 WorkingDirectory=/home/azoff/nuc
 ExecStart=/usr/bin/env docker compose up
-ExecStop=/usr/bin/env docker compose down
+ExecStop=/usr/bin/env docker compose stop
 TimeoutStartSec=0
 Restart=on-failure
 StartLimitBurst=3
