@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo "executing pre-receive hook"
+set -xe
+
+whoami
+pwd
+env
