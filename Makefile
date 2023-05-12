@@ -40,8 +40,13 @@ journal:
 logs:
 	docker compose logs -f
 
-add-remote:
-	git remote set-url --add origin azoff@nuc.azof.fr:azoff/nuc
+sync:
+	git merge --ff-only master
+
+origin:
+	git remote rm origin || true
+	git remote add origin git@github.com:azoff/nuc.git
+	git remote set-url --add origin azoff@nuc.azof.fr:nuc
 
 deploy-key:
 	[ -f ~/.ssh/id_ed25519.pub ] || ssh-keygen -t ed25519 -C "nuc" -f ~/.ssh/id_ed25519
