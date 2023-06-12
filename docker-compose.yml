@@ -8,6 +8,9 @@ services:
       target: langchain-serve-img
     network_mode: host
     env_file: .env
+    working_dir: /app
+    volumes:
+      - ./pdf-gpt:/app
 
   pdfgpt-client:
     build:
@@ -15,6 +18,8 @@ services:
       target: pdf-gpt-img
     network_mode: host
     env_file: .env
+    volumes:
+      - ./pdf-gpt:/app
 
   nginx:
     init: true
