@@ -2,6 +2,22 @@ version: "3.8"
 
 services:
 
+  pdfgpt-server:
+    build:
+      context: pdfgpt 
+      target: langchain-serve-img
+    # ports:
+    #   - '8080:8080'
+    network_mode: host
+
+  pdfgpt-client:
+    build:
+      context: pdfgpt
+      target: pdf-gpt-img
+    # ports:
+    #   - '7860:7860'
+    network_mode: host
+
   nginx:
     init: true
     image: azoff/nginx
@@ -18,7 +34,9 @@ services:
           static.azof.fr, 
           plex.azof.fr -> http://localhost:32400, 
           ${CCTV_LOGIN:-}cctv.azof.fr -> http://${CCTV_IP:-tinypilot.local}, 
-          tx.azof.fr   -> http://localhost:9091
+          tx.azof.fr   -> http://localhost:9091,
+          pdf.azof.fr  -> http://localhost:7860,
+          api.pdf.azof.fr  -> http://localhost:8080
 
   plex:
     image: azoff/plex
