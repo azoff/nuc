@@ -1,3 +1,0 @@
-[submodule "pdf-gpt"]
-	path = pdf-gpt
-	url = git@github.com:azoff/pdfGPT.git

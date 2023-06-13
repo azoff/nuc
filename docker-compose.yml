@@ -8,6 +8,9 @@ services:
       target: langchain-serve-img
     network_mode: host
     env_file: .env
+    environment:
+      - TF_ENABLE_ONEDNN_OPTS=0
+      - JINA_HIDE_SURVEY=1
     working_dir: /app
     volumes:
       - ./pdf-gpt:/app
