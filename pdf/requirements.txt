@@ -1,0 +1,5 @@
+fastapi
+pydantic
+openai
+uvicorn[standard]
+pdfminer.six

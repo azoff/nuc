@@ -2,27 +2,18 @@ version: "3.8"
 
 services:
 
-  pdfgpt-server:
-    build:
-      context: pdf-gpt 
-      target: langchain-serve-img
-    network_mode: host
+  pdf:
+    image: azoff/pdf
+    build: pdf
     env_file: .env
     environment:
       - TF_ENABLE_ONEDNN_OPTS=0
       - JINA_HIDE_SURVEY=1
+    ports:
+      - 8000:8000
+    volumes:
+      - ./pdf:/app
     working_dir: /app
-    volumes:
-      - ./pdf-gpt:/app
-
-  pdfgpt-client:
-    build:
-      context: pdf-gpt
-      target: pdf-gpt-img
-    network_mode: host
-    env_file: .env
-    volumes:
-      - ./pdf-gpt:/app
 
   nginx:
     init: true
@@ -41,8 +32,7 @@ services:
           plex.azof.fr -> http://localhost:32400, 
           ${CCTV_LOGIN:-}cctv.azof.fr -> http://${CCTV_IP:-tinypilot.local}, 
           tx.azof.fr   -> http://localhost:9091,
-          ${PDFGPT_LOGIN:-}pdf.azof.fr  -> http://localhost:7860,
-          ${PDFGPT_LOGIN:-}api.pdf.azof.fr  -> http://localhost:8080
+          ${PDFGPT_LOGIN:-}pdf.azof.fr  -> http://localhost:8000,
 
   plex:
     image: azoff/plex
