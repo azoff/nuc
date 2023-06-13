@@ -30,9 +30,9 @@ services:
       - DOMAINS=
           static.azof.fr, 
           plex.azof.fr -> http://localhost:32400, 
-          ${CCTV_LOGIN:-}cctv.azof.fr -> http://${CCTV_IP:-tinypilot.local}, 
+          ${CCTV_LOGIN:-}@cctv.azof.fr -> http://${CCTV_IP:-tinypilot.local}, 
           tx.azof.fr   -> http://localhost:9091,
-          ${PDFGPT_LOGIN:-}pdf.azof.fr  -> http://localhost:8000,
+          ${PDF_LOGIN:-}@pdf.azof.fr  -> http://localhost:8000,
 
   plex:
     image: azoff/plex
