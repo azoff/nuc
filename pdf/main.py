@@ -18,6 +18,7 @@ class AskRequest(Request):
 
 class AskJsonRequest(Request):
 	questions: dict
+	extra_context: str = ''
 	decode: bool = True
 
 logging.basicConfig(level=logging.INFO)
@@ -61,7 +62,7 @@ def ask_json(req:AskJsonRequest):
 	
 	Input Questions:
 	""" + json.dumps(req.questions)
-	(completion, chunks) = download_pdf_and_create_completion(req.url, prompt)
+	(completion, chunks) = download_pdf_and_create_completion(req.url, prompt, extra_context=req.extra_context)
 	text = completion.choices[0].text
 	answer = None
 	
@@ -79,8 +80,9 @@ def ask_json(req:AskJsonRequest):
 		"chunks": chunks
 	}
 
-def download_pdf_and_extract_chunks(url: str) -> str:
+def download_pdf_and_extract_chunks(url: str, extra_context: str = '') -> str:
 	text = download_pdf_and_extract_text(url)
+	text = extra_context + '\n' + text
 	return text_to_chunks(text)
 
 def download_pdf_and_extract_text(url: str) -> str:
@@ -90,8 +92,8 @@ def download_pdf_and_extract_text(url: str) -> str:
 		text = extract_text(temp.name)
 	return text
 
-def download_pdf_and_create_completion(url: str, prompt: str):
-	chunks = download_pdf_and_extract_chunks(url)
+def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = ''):
+	chunks = download_pdf_and_extract_chunks(url, extra_context=extra_context)
 	wrapped_prompt = wrap_prompt(chunks, prompt)
 	return (create_completions(wrapped_prompt), chunks)
 
