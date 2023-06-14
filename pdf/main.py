@@ -158,7 +158,7 @@ def create_completions(prompt):
 	openai.api_key = os.environ.get("OPENAI_API_KEY")
 	logging.info(f"Creating completion...")
 	completion = openai.Completion.create(
-		engine="gpt-3.5-turbo",
+		engine="text-davinci-003",
 		prompt=prompt,
 		max_tokens=512,
 		n=1,
