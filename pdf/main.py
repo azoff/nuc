@@ -34,13 +34,13 @@ def text(req:Request):
 
 @app.post("/truncate")
 def truncate(req:TruncateRequest):
-	chunks = download_pdf_and_truncate_text(
+	text = download_pdf_and_truncate_text(
 		req.url, 
 		extra_context=req.extra_context, 
 		max_tokens=req.max_tokens,
 		model=req.model
 	)
-	return { "chunks": chunks }
+	return { "text": text }
 
 def download_pdf_and_truncate_text(url: str, extra_context: str = '', max_tokens:int = 256, model:str = "gpt-3.5-turbo") -> str:
 	text = download_pdf_and_extract_text(url, extra_context=extra_context)
