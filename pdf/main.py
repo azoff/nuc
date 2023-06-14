@@ -87,9 +87,8 @@ def download_pdf_and_extract_chunks(url: str, extra_context: str = '') -> str:
 
 def download_pdf_and_extract_text(url: str) -> str:
 	text = None
-	with tempfile.NamedTemporaryFile() as temp:
-		download_pdf(url, temp.name)
-		text = extract_text(temp.name)
+	local_path = download_pdf(url)
+	text = extract_text(local_path)
 	return text
 
 def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = ''):
@@ -117,11 +116,19 @@ def wrap_prompt(chunks: List[str], question:str) -> str:
 		Answer:
 	"""
 
-def download_pdf(url, output_path):
-	logging.info(f"Downloading PDF from {url} to {output_path}")
-	pdf = urlretrieve(url, output_path)
-	logging.info(f"PDF downloaded.")
-	return pdf
+cache = {}
+def download_pdf(url):
+	global cache
+	# check if pdf was already downloaded, and then check to see that the file exists
+	if (url in cache) and os.path.exists(cache[url]):
+		logging.info(f"PDF already downloaded from {url}, using cached version.")
+		return cache[url]
+	with tempfile.NamedTemporaryFile() as temp:		
+		logging.info(f"Downloading PDF from {url}...")
+		urlretrieve(url, temp.name)
+		logging.info(f"PDF downloaded.")
+		cache[url] = temp.name
+	return cache[url]
 
 def text_to_chunks(text:str) -> List[str]:
 	text = text.replace('\n', ' ')
