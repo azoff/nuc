@@ -45,8 +45,7 @@ def ask(req:AskRequest):
 
 @app.post("/ask")
 def ask_json(req:AskJsonRequest):
-	prompt = """Please provide the answer in JSON format, ensure the entire response structure is 
-	decodable as JSON, do not prefix with 'Response: ' and quote all keys:
+	prompt = """Please provide the answer in JSON format, do not prefix with 'Response: '.
 	Response schema:
 		interface Answer {
 			text: string,
@@ -55,6 +54,7 @@ def ask_json(req:AskJsonRequest):
 		interface Response \{
 			[question_key: string]: Answer[]
 		}
+	Ensure all Answer object keys are properly quoted and decodable as JSON.
 	
 	Input Questions:
 	""" + json.dumps(req.questions, indent=4)
