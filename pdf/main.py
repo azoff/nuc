@@ -100,7 +100,7 @@ def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str
 def wrap_prompt(chunks: List[str], question:str) -> str:
 	search_results = '\n'.join(chunks)
 	return f"""Instructions:
-		Compose a comprehensive reply to the query using the search results given.
+		Compose a comprehensive reply to the query using the search results given. All answers should be as short as possible.
 		Cite each reference using the '[N]' notation referencing the matching search result (every result has this number at the beginning).
 		Citation should be included with each answer. If the search results mention multiple subjects
 		with the same name, create separate answers for each. Only include information found in the results and
