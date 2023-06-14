@@ -140,13 +140,13 @@ def download_pdf(url, output_path):
 	logging.info(f"PDF downloaded.")
 	return pdf
 
-def text_to_chunks(text:str) -> List[str]:
+def text_to_chunks(text:str, chunk_size:int = 4096) -> List[str]:
 	text = text.replace('\n', ' ')
 	text = re.sub('\s+', ' ', text)
 	text_toks = text.split(' ')
 	chunks = []
-	for i in range(0, len(text_toks), 150):
-		chunk = text_toks[i : i + 150]
+	for i in range(0, len(text_toks), chunk_size):
+		chunk = text_toks[i : i + chunk_size]
 		chunks.append(f"{len(chunks)+1}. {' '.join(chunk)}")
 	return chunks
 
