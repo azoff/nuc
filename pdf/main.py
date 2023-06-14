@@ -15,19 +15,21 @@ class Request(pydantic.BaseModel):
 
 class AskRequest(Request):
 	prompt: str
+	clear_cache: bool = False
+	extra_context: str = ''
 
 class AskJsonRequest(Request):
 	questions: dict
-	extra_context: str = ''
 	decode: bool = True
 
 logging.basicConfig(level=logging.INFO)
 
 app = FastAPI()
+cache = {}
 
 @app.get("/")
 def index():
-	return {"status": "ready"}
+	return {"status": "ok"}
 
 @app.post("/text")
 def text(req:Request):
@@ -40,8 +42,12 @@ def chunks(req:Request):
 	return { "chunks": chunks }
 
 @app.post("/complete")
-def ask(req:AskRequest):
-	(completion, chunks) = download_pdf_and_create_completion(req.url, req.prompt)
+def complete(req:AskRequest):
+	(completion, chunks) = download_pdf_and_create_completion(
+		req.url, req.prompt, 
+		extra_context=req.extra_context, 
+		clear_cache=req.clear_cache
+	)
 	return { "completion": completion, "chunks": chunks }
 
 @app.post("/ask")
@@ -62,7 +68,11 @@ def ask_json(req:AskJsonRequest):
 	
 	Input Questions:
 	""" + json.dumps(req.questions)
-	(completion, chunks) = download_pdf_and_create_completion(req.url, prompt, extra_context=req.extra_context)
+	(completion, chunks) = download_pdf_and_create_completion(
+		req.url, prompt, 
+		extra_context=req.extra_context, 
+		clear_cache=req.clear_cache
+	)
 	text = completion.choices[0].text
 	answer = None
 	
@@ -87,14 +97,24 @@ def download_pdf_and_extract_chunks(url: str, extra_context: str = '') -> str:
 
 def download_pdf_and_extract_text(url: str) -> str:
 	text = None
-	local_path = download_pdf(url)
-	text = extract_text(local_path)
+	with tempfile.NamedTemporaryFile() as temp:
+		download_pdf(url, temp.name)
+		text = extract_text(temp.name)
 	return text
 
-def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = ''):
+def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = '', clear_cache: bool = False):
+	global cache
+	# hash the inputs into a cache key
+	cache_key = str(hash((url, prompt, extra_context)))
+	if clear_cache:
+		cache = {}
+	if (cache_key in cache and cache[cache_key] is not None):
+		logging.info(f"Using cached completion for {url}...")
+		return cache[cache_key]
 	chunks = download_pdf_and_extract_chunks(url, extra_context=extra_context)
 	wrapped_prompt = wrap_prompt(chunks, prompt)
-	return (create_completions(wrapped_prompt), chunks)
+	cache[cache_key] = (create_completions(wrapped_prompt), chunks) 
+	return cache[cache_key]
 
 def wrap_prompt(chunks: List[str], question:str) -> str:
 	search_results = '\n'.join(chunks)
@@ -116,19 +136,11 @@ def wrap_prompt(chunks: List[str], question:str) -> str:
 		Answer:
 	"""
 
-cache = {}
-def download_pdf(url):
-	global cache
-	# check if pdf was already downloaded, and then check to see that the file exists
-	if (url in cache) and os.path.exists(cache[url]):
-		logging.info(f"PDF already downloaded from {url}, using cached version.")
-		return cache[url]
-	with tempfile.NamedTemporaryFile() as temp:		
-		logging.info(f"Downloading PDF from {url}...")
-		urlretrieve(url, temp.name)
-		logging.info(f"PDF downloaded.")
-		cache[url] = temp.name
-	return cache[url]
+def download_pdf(url, output_path):
+	logging.info(f"Downloading PDF from {url} to {output_path}")
+	pdf = urlretrieve(url, output_path)
+	logging.info(f"PDF downloaded.")
+	return pdf
 
 def text_to_chunks(text:str) -> List[str]:
 	text = text.replace('\n', ' ')
