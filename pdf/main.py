@@ -15,7 +15,6 @@ class Request(pydantic.BaseModel):
 
 class ChunksRequest(Request):
 	extra_context: str = ''
-	clear_cache: bool = False
 
 class AskRequest(ChunksRequest):
 	prompt: str
@@ -48,7 +47,6 @@ def complete(req:AskRequest):
 	(completion, chunks) = download_pdf_and_create_completion(
 		req.url, req.prompt, 
 		extra_context=req.extra_context, 
-		clear_cache=req.clear_cache
 	)
 	return { "completion": completion, "chunks": chunks }
 
@@ -73,7 +71,6 @@ def ask_json(req:AskJsonRequest):
 	(completion, chunks) = download_pdf_and_create_completion(
 		req.url, prompt, 
 		extra_context=req.extra_context, 
-		clear_cache=req.clear_cache
 	)
 	text = completion.choices[0].text
 	answer = None
@@ -93,9 +90,15 @@ def ask_json(req:AskJsonRequest):
 	}
 
 def download_pdf_and_extract_chunks(url: str, extra_context: str = '') -> str:
+	global cache
+	cache_key = str(hash((url, extra_context)))
+	if (cache_key in cache and cache[cache_key] is not None):
+		logging.info(f"Using cached chunks for {url}...")
+		return cache[cache_key]
 	text = download_pdf_and_extract_text(url)
 	text = extra_context + '\n' + text
-	return text_to_chunks(text)
+	cache[cache_key] = text_to_chunks(text)
+	return cache[cache_key]
 
 def download_pdf_and_extract_text(url: str) -> str:
 	text = None
@@ -104,19 +107,10 @@ def download_pdf_and_extract_text(url: str) -> str:
 		text = extract_text(temp.name)
 	return text
 
-def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = '', clear_cache: bool = False):
-	global cache
-	# hash the inputs into a cache key
-	cache_key = str(hash((url, prompt, extra_context)))
-	if clear_cache:
-		cache = {}
-	if (cache_key in cache and cache[cache_key] is not None):
-		logging.info(f"Using cached completion for {url}...")
-		return cache[cache_key]
+def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = ''):
 	chunks = download_pdf_and_extract_chunks(url, extra_context=extra_context)
 	wrapped_prompt = wrap_prompt(chunks, prompt)
-	cache[cache_key] = (create_completions(wrapped_prompt), chunks) 
-	return cache[cache_key]
+	return (create_completions(wrapped_prompt), chunks) 
 
 def wrap_prompt(chunks: List[str], question:str) -> str:
 	search_results = '\n'.join(chunks)
