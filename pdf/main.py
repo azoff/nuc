@@ -5,6 +5,7 @@ import re
 import pydantic
 import os
 import json
+import tiktoken
 from typing import List
 from fastapi import FastAPI
 from urllib.request import urlretrieve
@@ -16,6 +17,7 @@ class Request(pydantic.BaseModel):
 
 class ChunkRequest(Request):
 	chunk_size: int = 256
+	model: str = "gpt-3.5-turbo"
 
 class AskRequest(ChunkRequest):
 	prompt: str
@@ -40,7 +42,12 @@ def text(req:Request):
 
 @app.post("/chunks")
 def chunks(req:ChunkRequest):
-	chunks = download_pdf_and_extract_chunks(req.url, extra_context=req.extra_context, chunk_size=req.chunk_size)
+	chunks = download_pdf_and_extract_chunks(
+		req.url, 
+		extra_context=req.extra_context, 
+		chunk_size=req.chunk_size,
+		model=req.model
+	)
 	return { "chunks": chunks }
 
 @app.post("/complete")
@@ -48,7 +55,8 @@ def complete(req:AskRequest):
 	(completion, chunks) = download_pdf_and_create_completion(
 		req.url, req.prompt, 
 		extra_context=req.extra_context, 
-		chunk_size=req.chunk_size
+		chunk_size=req.chunk_size,
+		model=req.model
 	)
 	return { "completion": completion, "chunks": chunks }
 
@@ -72,7 +80,9 @@ def ask_json(req:AskJsonRequest):
 	""" + json.dumps(req.questions)
 	(completion, chunks) = download_pdf_and_create_completion(
 		req.url, prompt, 
-		extra_context=req.extra_context, 
+		extra_context=req.extra_context,
+		chunk_size=req.chunk_size,
+		model=req.model 
 	)
 	text = completion.choices[0].text
 	answer = None
@@ -91,9 +101,9 @@ def ask_json(req:AskJsonRequest):
 		"chunks": chunks
 	}
 
-def download_pdf_and_extract_chunks(url: str, extra_context: str = '', chunk_size:int = 256) -> str:
+def download_pdf_and_extract_chunks(url: str, extra_context: str = '', chunk_size:int = 256, model:str = "gpt-3.5-turbo") -> str:
 	text = download_pdf_and_extract_text(url, extra_context=extra_context)
-	return text_to_chunks(text, chunk_size=chunk_size)
+	return text_to_chunks(text, chunk_size=chunk_size, model=model)
 
 def download_pdf_and_extract_text(url: str, extra_context: str = '') -> str:
 	
@@ -113,8 +123,8 @@ def download_pdf_and_extract_text(url: str, extra_context: str = '') -> str:
 	cache[cache_key] = f"{extra_context}{text}"
 	return cache[cache_key]
 
-def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = '', chunk_size:int =256):
-	chunks = download_pdf_and_extract_chunks(url, extra_context=extra_context, chunk_size=chunk_size)
+def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = '', chunk_size:int = 256, model:str = "gpt-3.5-turbo"):
+	chunks = download_pdf_and_extract_chunks(url, extra_context=extra_context, chunk_size=chunk_size, model=model)
 	wrapped_prompt = wrap_prompt(chunks, prompt)
 	return (create_completions(wrapped_prompt), chunks) 
 
@@ -144,15 +154,18 @@ def download_pdf(url, output_path):
 	logging.info(f"PDF downloaded.")
 	return pdf
 
-def text_to_chunks(text:str, chunk_size:int = 256) -> List[str]:
+def text_to_chunks(text:str, chunk_size:int = 256, model:str = "gpt-3.5-turbo") -> List[str]:
 	text = text.replace('\n', ' ')
 	text = re.sub('[\s\W]([\S\w][\s\W])+', ' ', text)
 	text = re.sub('\s+', ' ', text)
-	text_toks = text.split(' ')
-	chunks = []
+	chunk_size = chunk_size - 1
+	encoder = tiktoken.get_encoder(model)
+	text_toks = encoder.encode(text)
+	encoded_chunks = []
 	for i in range(0, len(text_toks), chunk_size):
-		chunk = text_toks[i : i + chunk_size]
-		chunks.append(f"{len(chunks)+1}. {' '.join(chunk)}")
+		encoded_chunk = text_toks[i : i + chunk_size]
+		encoded_chunks.append(encoded_chunk)
+	chunks = [f"{i+1}. {encoder.decode(chunk)}" for i, chunk in enumerate(encoded_chunks)]
 	return chunks
 
 def create_completions(prompt):
