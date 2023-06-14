@@ -13,12 +13,14 @@ from pdfminer.high_level import extract_text
 class Request(pydantic.BaseModel):
 	url: str
 
-class AskRequest(Request):
-	prompt: str
-	clear_cache: bool = False
+class ChunksRequest(Request):
 	extra_context: str = ''
+	clear_cache: bool = False
 
-class AskJsonRequest(Request):
+class AskRequest(ChunksRequest):
+	prompt: str
+
+class AskJsonRequest(ChunksRequest):
 	questions: dict
 	decode: bool = True
 
@@ -38,7 +40,7 @@ def text(req:Request):
 
 @app.post("/chunks")
 def chunks(req:Request):
-	chunks = download_pdf_and_extract_chunks(req.url)
+	chunks = download_pdf_and_extract_chunks(req.url, extra_context=req.extra_context)
 	return { "chunks": chunks }
 
 @app.post("/complete")
