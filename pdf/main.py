@@ -74,9 +74,9 @@ def truncate_text(text:str, max_tokens:int = 256, model:str = "gpt-3.5-turbo") -
 	text = text.replace('\n', ' ')
 	text = re.sub('[\s\W]([\S\w][\s\W])+', ' ', text)
 	text = re.sub('\s+', ' ', text)
-	encoder = tiktoken.get_encoder(model)
-	tokens = encoder.encode(text)
+	encoding = tiktoken.encoding_for_model(model)
+	tokens = encoding.encode(text)
 	trim = max_tokens - len(tokens)
 	if trim >= 0:
 		return text
-	return encoder.decode(tokens[:trim])
+	return encoding.decode(tokens[:trim])
