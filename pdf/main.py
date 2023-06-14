@@ -12,14 +12,12 @@ from pdfminer.high_level import extract_text
 
 class Request(pydantic.BaseModel):
 	url: str
-
-class ChunksRequest(Request):
 	extra_context: str = ''
 
-class AskRequest(ChunksRequest):
+class AskRequest(Request):
 	prompt: str
 
-class AskJsonRequest(ChunksRequest):
+class AskJsonRequest(Request):
 	questions: dict
 	decode: bool = True
 
@@ -34,7 +32,7 @@ def index():
 
 @app.post("/text")
 def text(req:Request):
-	text = download_pdf_and_extract_text(req.url)
+	text = download_pdf_and_extract_text(req.url, extra_context=req.extra_context)
 	return { "text": text }
 
 @app.post("/chunks")
@@ -90,22 +88,26 @@ def ask_json(req:AskJsonRequest):
 	}
 
 def download_pdf_and_extract_chunks(url: str, extra_context: str = '') -> str:
+	text = download_pdf_and_extract_text(url, extra_context=extra_context)
+	return text_to_chunks(text)
+
+def download_pdf_and_extract_text(url: str, extra_context: str = '') -> str:
+	
 	global cache
+
+	# hash the inputs into a cache key
 	cache_key = str(hash((url, extra_context)))
 	if (cache_key in cache and cache[cache_key] is not None):
-		logging.info(f"Using cached chunks for {url}...")
+		logging.info(f"Using cache for {url}...")
 		return cache[cache_key]
-	text = download_pdf_and_extract_text(url)
-	text = extra_context + '\n' + text
-	cache[cache_key] = text_to_chunks(text)
-	return cache[cache_key]
-
-def download_pdf_and_extract_text(url: str) -> str:
-	text = None
+	
+	text = ''
 	with tempfile.NamedTemporaryFile() as temp:
 		download_pdf(url, temp.name)
 		text = extract_text(temp.name)
-	return text
+	
+	cache[cache_key] = f"{extra_context}{text}"
+	return cache[cache_key]
 
 def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = ''):
 	chunks = download_pdf_and_extract_chunks(url, extra_context=extra_context)
