@@ -15,7 +15,7 @@ class Request(pydantic.BaseModel):
 	extra_context: str = ''
 
 class ChunkRequest(Request):
-	chunk_size: int = 512
+	chunk_size: int = 256
 
 class AskRequest(ChunkRequest):
 	prompt: str
@@ -91,7 +91,7 @@ def ask_json(req:AskJsonRequest):
 		"chunks": chunks
 	}
 
-def download_pdf_and_extract_chunks(url: str, extra_context: str = '', chunk_size:int = 512) -> str:
+def download_pdf_and_extract_chunks(url: str, extra_context: str = '', chunk_size:int = 256) -> str:
 	text = download_pdf_and_extract_text(url, extra_context=extra_context)
 	return text_to_chunks(text, chunk_size=chunk_size)
 
@@ -113,7 +113,7 @@ def download_pdf_and_extract_text(url: str, extra_context: str = '') -> str:
 	cache[cache_key] = f"{extra_context}{text}"
 	return cache[cache_key]
 
-def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = '', chunk_size:int =512):
+def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = '', chunk_size:int =256):
 	chunks = download_pdf_and_extract_chunks(url, extra_context=extra_context, chunk_size=chunk_size)
 	wrapped_prompt = wrap_prompt(chunks, prompt)
 	return (create_completions(wrapped_prompt), chunks) 
@@ -144,7 +144,7 @@ def download_pdf(url, output_path):
 	logging.info(f"PDF downloaded.")
 	return pdf
 
-def text_to_chunks(text:str, chunk_size:int = 512) -> List[str]:
+def text_to_chunks(text:str, chunk_size:int = 256) -> List[str]:
 	text = text.replace('\n', ' ')
 	text = re.sub('[\s\W]([\S\w][\s\W])+', ' ', text)
 	text = re.sub('\s+', ' ', text)
@@ -161,7 +161,7 @@ def create_completions(prompt):
 	completion = openai.Completion.create(
 		engine="text-davinci-003",
 		prompt=prompt,
-		max_tokens=150,
+		max_tokens=512,
 		n=1,
 		stop=None,
 		temperature=0.7,
