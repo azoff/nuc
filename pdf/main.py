@@ -45,7 +45,10 @@ def ask(req:AskRequest):
 
 @app.post("/ask")
 def ask_json(req:AskJsonRequest):
-	prompt = """Please provide the answer in a compact JSON format, do not prefix with 'Response: '.
+	prompt = """
+	Please provide the answer in a compact JSON format, do not prefix with 
+	'Response: '. Ensure that every object in the tree is properly quoted and 
+	decodable as JSON.
 	Response schema:
 		interface Answer {
 			text: string,
