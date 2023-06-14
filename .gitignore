@@ -2,3 +2,4 @@
 .env
 plex/config
 pdf/__pycache__
+pdf/prompts
