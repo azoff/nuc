@@ -99,7 +99,7 @@ def wrap_prompt(chunks: List[str], question:str) -> str:
 		Citation should be included with each answer. If the search results mention multiple subjects
 		with the same name, create separate answers for each. Only include information found in the results and
 		don't add any additional information. Make sure the answer is correct and don't output false content.
-		If the text does not relate to the query, simply state 'Not Found'. Ignore outlier search results that 
+		If a given answer does not have a source in the search results, simply state 'undefined'. Ignore outlier search results that 
 		have nothing to do with the question. Only answer what is asked and respond in the format that the question asks. 
 		The answer should be short and concise. Answer step-by-step.
 
@@ -130,7 +130,7 @@ def text_to_chunks(text:str) -> List[str]:
 
 def create_completions(prompt):
 	openai.api_key = os.environ.get("OPENAI_API_KEY")
-	logging.info(f"Creating completion with prompt: {prompt}")
+	logging.info(f"Creating completion...")
 	completion = openai.Completion.create(
 		engine="text-davinci-003",
 		prompt=prompt,
