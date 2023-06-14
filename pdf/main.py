@@ -100,7 +100,7 @@ def wrap_prompt(chunks: List[str], question:str) -> str:
 		Citation should be included with each answer. If the search results mention multiple subjects
 		with the same name, create separate answers for each. Only include information found in the results and
 		don't add any additional information. Make sure the answer is correct and don't output false content.
-		If a given answer does not have a source in the search results, simply state 'undefined'. Ignore outlier search results that 
+		If a given answer does not have a source in the search results, simply state 'null'. Ignore outlier search results that 
 		have nothing to do with the question. Only answer what is asked and respond in the format that the question asks. 
 		The answer should be short and concise. Answer step-by-step.
 
