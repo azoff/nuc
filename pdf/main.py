@@ -39,7 +39,7 @@ def text(req:Request):
 	return { "text": text }
 
 @app.post("/chunks")
-def chunks(req:Request):
+def chunks(req:ChunkRequest):
 	chunks = download_pdf_and_extract_chunks(req.url, extra_context=req.extra_context, chunk_size=req.chunk_size)
 	return { "chunks": chunks }
 
