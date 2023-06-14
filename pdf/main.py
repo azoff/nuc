@@ -14,10 +14,13 @@ class Request(pydantic.BaseModel):
 	url: str
 	extra_context: str = ''
 
-class AskRequest(Request):
+class ChunkRequest(Request):
+	chunk_size: int = 4096
+
+class AskRequest(ChunkRequest):
 	prompt: str
 
-class AskJsonRequest(Request):
+class AskJsonRequest(ChunkRequest):
 	questions: dict
 	decode: bool = True
 
@@ -37,7 +40,7 @@ def text(req:Request):
 
 @app.post("/chunks")
 def chunks(req:Request):
-	chunks = download_pdf_and_extract_chunks(req.url, extra_context=req.extra_context)
+	chunks = download_pdf_and_extract_chunks(req.url, extra_context=req.extra_context, chunk_size=req.chunk_size)
 	return { "chunks": chunks }
 
 @app.post("/complete")
@@ -45,6 +48,7 @@ def complete(req:AskRequest):
 	(completion, chunks) = download_pdf_and_create_completion(
 		req.url, req.prompt, 
 		extra_context=req.extra_context, 
+		chunk_size=req.chunk_size
 	)
 	return { "completion": completion, "chunks": chunks }
 
@@ -87,9 +91,9 @@ def ask_json(req:AskJsonRequest):
 		"chunks": chunks
 	}
 
-def download_pdf_and_extract_chunks(url: str, extra_context: str = '') -> str:
+def download_pdf_and_extract_chunks(url: str, extra_context: str = '', chunk_size:int = 4096) -> str:
 	text = download_pdf_and_extract_text(url, extra_context=extra_context)
-	return text_to_chunks(text)
+	return text_to_chunks(text, chunk_size=chunk_size)
 
 def download_pdf_and_extract_text(url: str, extra_context: str = '') -> str:
 	
@@ -109,8 +113,8 @@ def download_pdf_and_extract_text(url: str, extra_context: str = '') -> str:
 	cache[cache_key] = f"{extra_context}{text}"
 	return cache[cache_key]
 
-def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = ''):
-	chunks = download_pdf_and_extract_chunks(url, extra_context=extra_context)
+def download_pdf_and_create_completion(url: str, prompt: str, extra_context: str = '', chunk_size:int =4096):
+	chunks = download_pdf_and_extract_chunks(url, extra_context=extra_context, chunk_size=chunk_size)
 	wrapped_prompt = wrap_prompt(chunks, prompt)
 	return (create_completions(wrapped_prompt), chunks) 
 
