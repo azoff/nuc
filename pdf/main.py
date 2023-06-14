@@ -146,6 +146,7 @@ def download_pdf(url, output_path):
 
 def text_to_chunks(text:str, chunk_size:int = 512) -> List[str]:
 	text = text.replace('\n', ' ')
+	text = re.sub('\s\S\s', ' ', text)
 	text = re.sub('\s+', ' ', text)
 	text_toks = text.split(' ')
 	chunks = []

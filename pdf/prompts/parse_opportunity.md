@@ -1,4 +1,4 @@
-Compose a comprehensive Reply to the Query using the search results (chunks) given. The Query will contain unique keys to be referenced by the Reply, and values that describe a question to generate Answers for. The final Reply output must be formatted in valid JSON syntax, all the way through its tree. The Query and Reply must conform to the following TypeScript definitions:
+Compose a comprehensive Reply to the Query using the search results (chunks) given. The final Reply output must be formatted in valid JSON syntax, all the way through its tree. The Query and Reply must conform to the following TypeScript definitions:
 
 ```typescript
 interface Answer {
@@ -7,7 +7,7 @@ interface Answer {
 }
 
 interface Reply {
-	[question_key: string]: Answer[]
+	[question_key: string]: Answer
 }
 
 interface Query {
@@ -15,7 +15,7 @@ interface Query {
 }
 ```
 
-All Answer text should be as short as possible, and cite the chunk that they derive their answers from in the Answer chunk field. Each chunk number is found at the beginning of each search result chunk. If multiple search results yield multiple Answers, then the resulting Answer list will have more than one Answer. Only include information found in the results and don't add any additional information. Make sure the answer is correct and don't output false content. Ignore outlier search results that have nothing to do with the question. Only answer what is asked and answer step-by-step.
+All Answer text should be as short as possible, and cite the chunk that they derive their answers from in the Answer chunk field. Each chunk number is found at the beginning of each search result chunk. Only include information found in the results and don't add any additional information. Make sure the answer is correct and don't output false content. Ignore outlier search results that have nothing to do with the question. Only answer what is asked and answer step-by-step.
 
 Query: 
 ```typescript
