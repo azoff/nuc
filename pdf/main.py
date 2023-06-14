@@ -5,7 +5,6 @@ import pydantic
 import os
 import json
 import tiktoken
-from typing import List
 from fastapi import FastAPI
 from urllib.request import urlretrieve
 from pdfminer.high_level import extract_text
@@ -65,7 +64,7 @@ def download_pdf_and_extract_text(url: str, extra_context: str = '') -> str:
 	return cache[cache_key]
 
 def download_pdf(url, output_path):
-	logging.info(f"Downloading PDF from {url} to {output_path}")
+	logging.info(f"Downloading PDF from {url}...")
 	pdf = urlretrieve(url, output_path)
 	logging.info(f"PDF downloaded.")
 	return pdf
@@ -78,5 +77,8 @@ def truncate_text(text:str, max_tokens:int = 256, model:str = "gpt-3.5-turbo") -
 	tokens = encoding.encode(text)
 	trim = max_tokens - len(tokens)
 	if trim >= 0:
+		logging.info(f"No truncation needed, {len(tokens)} <= {max_tokens}.")
 		return text
+	
+	logging.info(f"Truncating {len(tokens)} to {max_tokens}...")
 	return encoding.decode(tokens[:trim])
