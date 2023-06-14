@@ -58,9 +58,18 @@ def ask_json(req:AskJsonRequest):
 	Input Questions:
 	""" + json.dumps(req.questions, indent=4)
 	(completion, chunks) = download_pdf_and_create_completion(req.url, prompt)
-	answer = completion.choices[0].text
+	text = completion.choices[0].text
+	answer = None
+	
 	if (req.decode):
-		answer = json.loads(answer)
+		try:
+			answer = json.loads(text)
+		except json.JSONDecodeError:
+			logging.error(f"Failed to decode response as JSON: {text}")
+			raise
+	else:
+		answer = text
+
 	return {
 		"answer": answer,
 		"chunks": chunks
@@ -104,7 +113,10 @@ def wrap_prompt(chunks: List[str], question:str) -> str:
 	"""
 
 def download_pdf(url, output_path):
-	urlretrieve(url, output_path)
+	logging.info(f"Downloading PDF from {url} to {output_path}")
+	pdf = urlretrieve(url, output_path)
+	logging.info(f"PDF downloaded.")
+	return pdf
 
 def text_to_chunks(text:str) -> List[str]:
 	text = text.replace('\n', ' ')
@@ -118,7 +130,8 @@ def text_to_chunks(text:str) -> List[str]:
 
 def create_completions(prompt):
 	openai.api_key = os.environ.get("OPENAI_API_KEY")
-	return openai.Completion.create(
+	logging.info(f"Creating completion with prompt: {prompt}")
+	completion = openai.Completion.create(
 		engine="text-davinci-003",
 		prompt=prompt,
 		max_tokens=512,
@@ -126,3 +139,5 @@ def create_completions(prompt):
 		stop=None,
 		temperature=0.7,
 	)
+	logging.info(f"Completion created: {completion}")
+	return completion
