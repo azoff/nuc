@@ -6,7 +6,7 @@ services:
     image: redis:alpine
     restart: unless-stopped
     volumes:
-      - ${SHARED_MOUNT_PATH:-/tmp}/redis:/data
+      - /tmp/redis:/data
     networks:
       - internal
 
