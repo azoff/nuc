@@ -3,17 +3,9 @@ version: "3.8"
 services:
 
   pdf:
-    image: azoff/pdf
-    build: pdf
-    env_file: .env
-    environment:
-      - TF_ENABLE_ONEDNN_OPTS=0
-      - JINA_HIDE_SURVEY=1
+    image: azoff/flask-pdf-tokenizer:1.0.1
     ports:
       - 8000:8000
-    volumes:
-      - ./pdf:/app
-    working_dir: /app
 
   nginx:
     init: true
