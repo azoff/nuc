@@ -2,10 +2,23 @@ version: "3.8"
 
 services:
 
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    volumes:
+      - ${SHARED_MOUNT_PATH:-/tmp}/redis:/data
+    networks:
+      - internal
+
   pdf:
-    image: azoff/flask-pdf-tokenizer:1.0.1
+    image: azoff/flask-pdf-tokenizer:1.1.0
     ports:
       - 8000:8000
+    environment:
+      - REDIS_HOST=redis
+    networks:
+      - internal
+      - default
 
   nginx:
     init: true
@@ -77,3 +90,7 @@ services:
     
 volumes:
   https-portal-data:
+
+networks:
+  internal:
+  default:
