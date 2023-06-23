@@ -46,7 +46,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.75'
+          cpus: '6.0'
           memory: 10G
     volumes:
       - ${SHARED_MOUNT_PATH:-/tmp}/plex/data:/data:ro
