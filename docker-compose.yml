@@ -43,6 +43,11 @@ services:
     image: azoff/plex
     build: plex
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: 6
+          memory: 10G
     volumes:
       - ${SHARED_MOUNT_PATH:-/tmp}/plex/data:/data:ro
       - ${SHARED_MOUNT_PATH:-/tmp}/plex/config:/config
