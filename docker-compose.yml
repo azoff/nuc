@@ -11,7 +11,7 @@ services:
       - internal
 
   pdf:
-    image: azoff/flask-pdf-tokenizer:1.7.0
+    image: azoff/flask-pdf-tokenizer:1.7.1
     ports:
       - 8000:8000
     environment:
