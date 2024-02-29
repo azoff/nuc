@@ -20,6 +20,20 @@ services:
       - internal
       - default
 
+  meater:
+    image: azoff/meater:1.2.0
+    ports:
+      - 3000:${MEATER_BUN_PORT}
+    environment:
+      - BUN_HOST=${MEATER_BUN_HOST}
+      - BUN_PORT=${MEATER_BUN_PORT}
+      - GOOGLE_SHEET_ID=${MEATER_GOOGLE_SHEET_ID}
+      - GOOGLE_MAP_ID=${MEATER_GOOGLE_MAP_ID}
+      - GOOGLE_SERVICE_ACCOUNT_EMAIL=${MEATER_GOOGLE_SERVICE_ACCOUNT_EMAIL}
+      - GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=${MEATER_GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY}
+    networks:
+      - default
+
   nginx:
     init: true
     image: azoff/nginx
@@ -34,7 +48,8 @@ services:
       - STAGE=${CERT_STAGE:-local}
       - DOMAINS=
           static.azof.fr, 
-          plex.azof.fr -> http://localhost:32400, 
+          plex.azof.fr -> http://localhost:32400,
+          meater.azof.fr -> http://localhost:3000,
           ${CCTV_LOGIN:-}@cctv.azof.fr -> http://${CCTV_IP:-tinypilot.local}, 
           tx.azof.fr   -> http://localhost:9091,
           ${PDF_LOGIN:-}@pdf.azof.fr  -> http://localhost:8000,
