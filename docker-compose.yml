@@ -46,7 +46,9 @@ services:
     env_file: .env
     environment:
       - STAGE=${CERT_STAGE:-local}
-      - INDEX_FILES=${INDEX_FILES:-'index.html consulting.pdf'}
+      - INDEX_FILES=
+          index.html
+          consulting.pdf
       - DOMAINS=
           cmt.azof.fr => https://carolyn.thayer.azof.fr,
           carolyn.thayer.azof.fr,
