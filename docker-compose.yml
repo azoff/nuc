@@ -9,7 +9,7 @@ services:
       - internal
 
   pdf:
-    image: azoff/flask-pdf-tokenizer:1.15.1
+    image: azoff/flask-pdf-tokenizer:1.15.2
     restart: unless-stopped
     ports:
       - 8000:8000
