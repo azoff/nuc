@@ -39,6 +39,27 @@ services:
           ${CCTV_LOGIN:-}@cctv.azof.fr -> http://${CCTV_IP:-tinypilot.local}, 
           tx.azof.fr   -> http://localhost:9091,
           ${PDF_LOGIN:-}@pdf.azof.fr  -> http://localhost:8000,
+          ${CHANGEDETECTION_LOGIN:-}@changedetection.azof.fr  -> http://localhost:5000,
+
+  changedetection:
+    image: dgtlmoon/changedetection.io:latest
+    volumes:
+      - ${SHARED_MOUNT_PATH:-/tmp}/changedetection/datastore:/datastore
+      # Configurable proxy list support, 
+      # see https://github.com/dgtlmoon/changedetection.io/wiki/Proxy-configuration#proxy-list-support
+      # - ./proxies.json:/datastore/proxies.json
+    networks:
+      - internal
+      - default
+    environment:
+      - PORT=5000
+      - BASE_URL=${CHANGEDETECTION_BASE_URL:-https://changedetection.azof.fr}
+      - HIDE_REFERER=true
+      - FETCH_WORKERS=2
+      - MINIMUM_SECONDS_RECHECK_TIME=1
+      - DISABLE_VERSION_CHECK=true
+      - TZ=America/Los_Angeles
+    restart: unless-stopped
 
   plex:
     image: azoff/plex
@@ -50,7 +71,7 @@ services:
           cpus: '2.0'
           memory: 10G
     volumes:
-      - ${SHARED_MOUNT_PATH:-/tmp}/plex/data:/data:ro
+      - ${SHARED_MOUNT_PATH:-/tmp}:/data:ro
       - ${SHARED_MOUNT_PATH:-/tmp}/plex/config:/config
       - ${PLEX_TRANSCODE_PATH:-/tmp/plex/transcode}:/transcode
     env_file: .env

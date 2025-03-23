@@ -7,7 +7,7 @@ while read oldrev newrev ref
 do
     branch=$(git rev-parse --symbolic --abbrev-ref $ref)
     if [[ $branch == "master" ]]; then
-				repo_dir=$(readlink -f "${GIT_DIR}/..")
+        repo_dir=$(readlink -f "${GIT_DIR}/..")
         bash -c "cd $repo_dir && make sync"
     fi
 done
