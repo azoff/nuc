@@ -73,7 +73,7 @@ services:
           cpus: '2.0'
           memory: 10G
     volumes:
-      - ${SHARED_MOUNT_PATH:-/tmp}:/data:ro
+      - ${SHARED_MOUNT_PATH:-/tmp}/plex/data:/data:ro
       - ${SHARED_MOUNT_PATH:-/tmp}/plex/config:/config
       - ${PLEX_TRANSCODE_PATH:-/tmp/plex/transcode}:/transcode
     env_file: .env
