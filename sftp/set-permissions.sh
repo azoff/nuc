@@ -50,6 +50,9 @@ for user_dir in /home/*; do
 		chown "$username:root" "$user_dir/share"
 		chmod 755 "$user_dir/share"
 		echo "Share directory created and permissions set."
+	else
+		echo "Share directory already exists for $username. Setting permissions..."
+		chown -R "$username:root" "$user_dir/share"
 	fi
 	
 	echo "Completed permissions setup for $username"
