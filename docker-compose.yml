@@ -41,7 +41,7 @@ services:
     build: nginx
     restart: unless-stopped
     volumes:
-      - ${SHARED_MOUNT_PATH:-/tmp}/sftp/home/carolyn/share/carolyn.thayer.azof.fr:/var/www/vhosts/carolyn.thayer.azof.fr:ro
+      - ${SHARED_MOUNT_PATH:-/tmp}/sftp/home/carolyn/share/carolyn.thayer.azof.fr:/var/www/vhosts/carolyn.thayer.azof.fr
       - https-portal-data:/var/lib/https-portal
     network_mode: host
     env_file: .env
