@@ -19,13 +19,29 @@ services:
       - internal
       - default
 
+  sftp:
+    image: azoff/sftp
+    build: sftp
+    restart: unless-stopped
+    ports:
+      - 2222:22
+    volumes:
+      - ${SHARED_MOUNT_PATH:-/tmp}/sftp/home:/home
+      - ${SHARED_MOUNT_PATH:-/tmp}/sftp/etc:/etc/sftp:ro
+      - ${SHARED_MOUNT_PATH:-/tmp}/sftp/ssh:/etc/ssh
+      - ./sftp/sshd_config:/etc/ssh/sshd_config:ro
+      - ./sftp/set-permissions.sh:/etc/sftp.d/set-permissions.sh:ro
+    command: 'jon::${UID:-1000}'
+    networks:
+      - default
+
   nginx:
     init: true
     image: azoff/nginx
     build: nginx
     restart: unless-stopped
     volumes:
-      - ./nginx/vhosts:/var/www/vhosts
+      - ${SHARED_MOUNT_PATH:-/tmp}/sftp/home/carolyn/share/carolyn.thayer.azof.fr:/var/www/vhosts/carolyn.thayer.azof.fr:ro
       - https-portal-data:/var/lib/https-portal
     network_mode: host
     env_file: .env
@@ -34,10 +50,9 @@ services:
       - DOMAINS=
           cmt.azof.fr => https://carolyn.thayer.azof.fr,
           carolyn.thayer.azof.fr,
-          static.azof.fr, 
           plex.azof.fr -> http://localhost:32400,
           ${CCTV_LOGIN:-}@cctv.azof.fr -> http://${CCTV_IP:-tinypilot.local}, 
-          tx.azof.fr   -> http://localhost:9091,
+          tx.azof.fr -> http://localhost:9091,
           ${PDF_LOGIN:-}@pdf.azof.fr  -> http://localhost:8000,
           ${CHANGEDETECTION_LOGIN:-}@changedetection.azof.fr  -> http://localhost:5000,
 
@@ -49,7 +64,6 @@ services:
       # see https://github.com/dgtlmoon/changedetection.io/wiki/Proxy-configuration#proxy-list-support
       # - ./proxies.json:/datastore/proxies.json
     networks:
-      - internal
       - default
     ports:
       - 5000:5000
