@@ -63,7 +63,7 @@ services:
           ${CCTV_LOGIN:-}@cctv.azof.fr -> http://${CCTV_IP:-tinypilot.local}, 
           ${PDF_LOGIN:-}@pdf.azof.fr -> http://pdf:8000,
           ${CHANGEDETECTION_LOGIN:-}@changedetection.azof.fr  -> http://changedetection:5000,
-          # tx.azof.fr -> http://host.docker.internal:9091,
+          tx.azof.fr -> http://host.docker.internal:9091,
 
   changedetection:
     image: dgtlmoon/changedetection.io:latest
