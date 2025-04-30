@@ -13,6 +13,8 @@ services:
     deploy:
       replicas: 2
     restart: unless-stopped
+    expose:
+      - 8000
     # ports:
     #   - 8000:8000
     environment:
@@ -47,9 +49,6 @@ services:
     networks:
       - default
     env_file: .env
-    expose:
-      - 80
-      - 443
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
@@ -108,8 +107,6 @@ services:
     image: azoff/transmission
     build: transmission
     restart: unless-stopped
-    expose:
-      - 9091
     volumes:
       - ${SHARED_MOUNT_PATH:-/tmp}/plex/data:/downloads
       - ${SHARED_MOUNT_PATH:-/tmp}/transmission/config:/config
