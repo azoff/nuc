@@ -9,7 +9,7 @@ services:
       - internal
 
   pdf:
-    image: azoff/flask-pdf-tokenizer:1.18.3
+    image: azoff/flask-pdf-tokenizer:1.18.4
     deploy:
       replicas: 2
     restart: unless-stopped
