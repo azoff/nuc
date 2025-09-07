@@ -62,7 +62,7 @@ services:
           cmt.azof.fr => https://carolyn.thayer.azof.fr,
           carolyn.thayer.azof.fr,
           plex.azof.fr -> http://host.docker.internal:32400,
-          ${CCTV_LOGIN:-}@cctv.azof.fr -> http://${CCTV_IP:-tinypilot.local}, 
+          ${CCTV_LOGIN:-}@cctv.azof.fr -> http://${CCTV_IP:-tinypilot.lan}, 
           ${PDF_LOGIN:-}@pdf.azof.fr -> http://pdf:8000,
           ${CHANGEDETECTION_LOGIN:-}@changedetection.azof.fr  -> http://changedetection:5000,
           tx.azof.fr -> http://host.docker.internal:9091,
