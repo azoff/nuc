@@ -40,6 +40,8 @@ services:
       - default
 
   nginx:
+    dns:
+      - 192.168.1.1
     image: azoff/nginx
     build: nginx
     restart: unless-stopped
