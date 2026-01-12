@@ -4,7 +4,7 @@ set -euo pipefail
 API_KEY="${PROWLARR__ApiKey:-${PROWLARR_API_KEY:-}}"
 API_URL="http://127.0.0.1:${PROWLARR__Server__Port:-${PROWLARR_PORT:-9696}}/api/v1"
 CLIENT_NAME="Transmission"
-TRANSMISSION_HOST="${TRANSMISSION_HOST:-vpn}"
+TRANSMISSION_HOST="${TRANSMISSION_HOST:-127.0.0.1}"
 TRANSMISSION_PORT="${TRANSMISSION_PORT:-9091}"
 TRANSMISSION_USER="${TRANSMISSION_USER:-transmission}"
 TRANSMISSION_PASSWORD="${TRANSMISSION_PASSWORD:-transmission}"
@@ -32,6 +32,20 @@ wait_for_api() {
     sleep 2
   done
   log "ERROR: Prowlarr API did not become ready in time." >&2
+  return 1
+}
+
+wait_for_transmission() {
+  for i in {1..60}; do
+    if timeout 2 bash -c "</dev/tcp/${TRANSMISSION_HOST}/${TRANSMISSION_PORT}" 2>/dev/null; then
+      log "Transmission TCP port is open at ${TRANSMISSION_HOST}:${TRANSMISSION_PORT} (attempt ${i})."
+      return 0
+    else
+      log "Transmission not reachable yet at ${TRANSMISSION_HOST}:${TRANSMISSION_PORT} (attempt ${i}); retrying..."
+    fi
+    sleep 2
+  done
+  log "ERROR: Transmission did not become reachable at ${TRANSMISSION_HOST}:${TRANSMISSION_PORT}." >&2
   return 1
 }
 
@@ -165,6 +179,7 @@ ensure_tpb_indexer() {
 main() {
   log "Waiting for Prowlarr API to be ready..."
   wait_for_api || exit 1
+  wait_for_transmission || exit 1
 
   if client_exists; then
     log "Transmission client already present; skipping creation."

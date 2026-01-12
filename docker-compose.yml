@@ -64,7 +64,7 @@ services:
           plex.azof.fr -> http://host.docker.internal:32400,
           ${CCTV_LOGIN:-}@cctv.azof.fr -> http://${CCTV_IP:-tinypilot}, 
           ${PDF_LOGIN:-}@pdf.azof.fr -> http://pdf:8000,
-          ${PROWLARR_LOGIN:-}@prowl.azof.fr -> http://prowlarr:9696,
+          ${PROWLARR_LOGIN:-}@prowl.azof.fr -> http://host.docker.internal:9696,
           tx.azof.fr -> http://host.docker.internal:9091,
 
   plex:
@@ -105,6 +105,7 @@ services:
     image: lscr.io/linuxserver/prowlarr:latest
     restart: unless-stopped
     env_file: .env
+    network_mode: service:vpn
     environment:
       - TZ=${TZ:-America/Los_Angeles}
       - PUID=${UID:-1000}
@@ -114,7 +115,7 @@ services:
       - PROWLARR__Server__Port=${PROWLARR_PORT:-9696}
       - PROWLARR__AuthenticationMethod=External
       - PROWLARR__AuthenticationRequired=DisabledForLocalAddresses
-      - TRANSMISSION_HOST=vpn
+      - TRANSMISSION_HOST=127.0.0.1
       - TRANSMISSION_PORT=${TRANSMISSION_PORT:-9091}
       - TRANSMISSION_USER=${TRANSMISSION_USER:-transmission}
       - TRANSMISSION_PASSWORD=${TRANSMISSION_PASSWORD:-transmission}
@@ -123,13 +124,9 @@ services:
       - ./prowlarr/configure-settings.sh:/custom-cont-init.d/00-configure-settings.sh:ro
       - ./prowlarr/init-prowlarr.sh:/opt/init-prowlarr.sh:ro
       - ./prowlarr/launch-init.sh:/custom-cont-init.d/10-launch-init.sh:ro
-    ports:
-      - ${PROWLARR_PORT:-9696}:9696
     depends_on:
       - vpn
       - transmission
-    networks:
-      - default
   
   vpn:
     image: azoff/vpn
@@ -150,6 +147,8 @@ services:
       - 9091:9091
       - 51413:51413
       - 51413:51413/udp
+      # prowlarr (shared network stack)
+      - 9696:9696
     
 volumes:
   https-portal-data:
