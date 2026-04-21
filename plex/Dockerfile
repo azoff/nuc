@@ -1,4 +1,4 @@
-FROM plexinc/pms-docker
+FROM plexinc/pms-docker:1.43.1.10611-1e34174b1
 
 ENV TZ=America/Los_Angeles
 ENV PLEX_UID=1000
