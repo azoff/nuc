@@ -1,5 +1,4 @@
 services:
-
   redis:
     image: redis:alpine
     restart: unless-stopped
@@ -19,6 +18,7 @@ services:
     #   - 8000:8000
     environment:
       - REDIS_HOST=redis
+      - HTTP_WRITE_AUTH=${PDF_LOGIN:-}
     networks:
       - internal
       - default
@@ -35,7 +35,7 @@ services:
       - ${SHARED_MOUNT_PATH:-/tmp}/sftp/ssh:/etc/ssh
       - ./sftp/sshd_config:/etc/ssh/sshd_config:ro
       - ./sftp/set-permissions.sh:/etc/sftp.d/set-permissions.sh:ro
-    command: 'jon::${UID:-1000}'
+    command: "jon::${UID:-1000}"
     networks:
       - default
 
@@ -59,13 +59,13 @@ services:
     environment:
       - STAGE=${CERT_STAGE:-local}
       - DOMAINS=
-          cmt.azof.fr => https://carolyn.thayer.azof.fr,
-          carolyn.thayer.azof.fr,
-          plex.azof.fr -> http://host.docker.internal:32400,
-          ${CCTV_LOGIN:-}@cctv.azof.fr -> http://${CCTV_IP:-tinypilot}, 
-          ${PDF_LOGIN:-}@pdf.azof.fr -> http://pdf:8000,
-          ${PROWLARR_LOGIN:-}@prowl.azof.fr -> http://host.docker.internal:9696,
-          tx.azof.fr -> http://host.docker.internal:9091,
+        cmt.azof.fr => https://carolyn.thayer.azof.fr,
+        carolyn.thayer.azof.fr,
+        plex.azof.fr -> http://host.docker.internal:32400,
+        ${CCTV_LOGIN:-}@cctv.azof.fr -> http://${CCTV_IP:-tinypilot},
+        pdf.azof.fr -> http://pdf:8000,
+        ${PROWLARR_LOGIN:-}@prowl.azof.fr -> http://host.docker.internal:9696,
+        tx.azof.fr -> http://host.docker.internal:9091,
 
   plex:
     image: azoff/plex
@@ -74,7 +74,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2.0'
+          cpus: "2.0"
           memory: 10G
     volumes:
       - ${SHARED_MOUNT_PATH:-/tmp}/plex/data:/data:ro
@@ -84,7 +84,7 @@ services:
     devices:
       - /dev/dri:/dev/dri
     network_mode: host
-  
+
   transmission:
     image: azoff/transmission
     build: transmission
@@ -127,7 +127,7 @@ services:
     depends_on:
       - vpn
       - transmission
-  
+
   vpn:
     image: azoff/vpn
     build: vpn
@@ -135,7 +135,7 @@ services:
       - ACTIVATION_CODE=${EXPRESSVPN_ACTIVATION_CODE}
     cap_add:
       - NET_ADMIN
-    devices: 
+    devices:
       - /dev/net/tun
     stdin_open: true
     tty: true
@@ -149,7 +149,7 @@ services:
       - 51413:51413/udp
       # prowlarr (shared network stack)
       - 9696:9696
-    
+
 volumes:
   https-portal-data:
 
