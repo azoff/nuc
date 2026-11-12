@@ -9,6 +9,7 @@ services:
       - ${SHARED_MOUNT_PATH:-/tmp}/sftp/home:/home
       - ${SHARED_MOUNT_PATH:-/tmp}/sftp/etc:/etc/sftp:ro
       - ${SHARED_MOUNT_PATH:-/tmp}/sftp/ssh:/etc/ssh
+      - ${SHARED_MOUNT_PATH:-/tmp}/plex/data:/home/jon/plex:ro
       - ./sftp/sshd_config:/etc/ssh/sshd_config:ro
       - ./sftp/set-permissions.sh:/etc/sftp.d/set-permissions.sh:ro
     command: "jon::${UID:-1000}"
