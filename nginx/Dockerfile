@@ -1,1 +1,1 @@
-FROM steveltn/https-portal:3
+FROM steveltn/https-portal:1.25.8
